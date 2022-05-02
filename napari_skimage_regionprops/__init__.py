@@ -1,4 +1,4 @@
-from ._table import add_table, get_table, TableWidget
+from ._table import add_table, get_table, TableWidget, add_column_to_layer_tabular_data
 from ._regionprops import regionprops, regionprops_table, regionprops_table_all_frames
 from ._parametric_images import visualize_measurement_on_labels
 from napari_plugin_engine import napari_hook_implementation
@@ -13,4 +13,3 @@ except ImportError:
 @napari_hook_implementation
 def napari_experimental_provide_function():
     return [regionprops_table, visualize_measurement_on_labels, load_csv]
-
