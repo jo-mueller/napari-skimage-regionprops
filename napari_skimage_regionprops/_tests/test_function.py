@@ -125,6 +125,36 @@ def test_append_table_by_merging(make_napari_viewer):
     assert 'B' in table_widget.get_content().keys()
     assert 'C' in table_widget.get_content().keys()
 
+def test_adding_columns_to_tabular_data(make_napari_viewer):
+    viewer = make_napari_viewer()
+
+    import numpy as np
+    from napari_skimage_regionprops import add_column_to_layer_tabular_data
+
+    image = np.asarray([
+        [0, 0],
+        [0, 1],
+    ])
+
+    labels_layer = viewer.add_labels(image)
+
+    table1 = {
+        "A":[1,2,4],
+        "B":[1,2,4]
+    }
+
+    labels_layer.properties = table1
+
+    new_feature_name = 'C'
+    new_feature_data = [1,2,4]
+    add_column_to_layer_tabular_data(labels_layer, new_feature_name, new_feature_data)
+
+    if hasattr(labels_layer, "properties"):
+        props = list(labels_layer.properties.keys())
+    if hasattr(labels_layer, "features"):
+        props = labels_layer.features.columns
+    assert new_feature_name in props
+
 def test_regionprops_without_moments(make_napari_viewer):
 
     viewer = make_napari_viewer()
