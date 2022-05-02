@@ -239,6 +239,29 @@ def get_table(labels_layer: napari.layers.Layer, viewer:napari.Viewer) -> TableW
 
     return None
 
+def add_column_to_layer_tabular_data(layer: napari.layers.Layer,
+                                     column_name: str,
+                                     data: Union[list, np.ndarray]):
+    """
+    Add a column to the properties/features of a Napari layer.
+
+    Parameters
+    ----------
+    layer : napari.layers.Layer
+    column_name : str
+    data : Union[list, np.ndarray]
+        Data to be added to the tabular data
+
+    Returns
+    -------
+    None.
+
+    """
+    if hasattr(layer, "properties"):
+        layer.properties[column_name] = data
+    if hasattr(layer, "features"):
+        layer.features.loc[:, column_name] = data
+
 def _determine_frame_column(table):
     candidates = ["Frame", "frame"]
     for c in candidates:
