@@ -1,6 +1,6 @@
 try:
     import napari
-    from qtpy.QtCore import QTimer
+    from qtpy.QtCore import QTimer, Qt
     from qtpy.QtWidgets import QTableWidget, QHBoxLayout, QTableWidgetItem, QWidget, QGridLayout, QPushButton, QFileDialog
 except Exception as e:
     import warnings
@@ -15,6 +15,7 @@ import pandas as pd
 from typing import Union
 import numpy as np
 
+from napari_matplotlib.line import FeaturesLine2DWidget
 
 class TableWidget(QWidget):
     """
@@ -36,6 +37,8 @@ class TableWidget(QWidget):
 
         self._view.clicked.connect(self._clicked_table)
         self._view.horizontalHeader().sectionDoubleClicked.connect(self._double_clicked_table)
+        self._view.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+        self._view.horizontalHeader().customContextMenuRequested.connect(self._on_rightclick)
         layer.mouse_drag_callbacks.append(self._clicked_labels)
 
         copy_button = QPushButton("Copy to clipboard")
@@ -54,6 +57,16 @@ class TableWidget(QWidget):
         self.layout().addWidget(self._view)
         action_widget.layout().setSpacing(3)
         action_widget.layout().setContentsMargins(0, 0, 0, 0)
+
+    def _on_rightclick(self):
+        
+        if not 'label' in self._table.keys() and not 'frame' in self._table.keys():
+            return
+        
+        selected_column = list(self._table.keys())[self._view.currentColumn()]
+        widget = FeaturesLine2DWidget(self._viewer, show_dropdowns=False)
+        self._viewer.window.add_dock_widget(widget, tabify=True)
+        widget._set_axis_keys('frame', selected_column)
 
     def _clicked_table(self):
         if "label" in self._table.keys():
